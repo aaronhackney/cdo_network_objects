@@ -3,7 +3,7 @@
 ## Abstract
 This script will extract the network objects and object-groups from Cisco Defense Orchestrator.
 
-This is using the CDO UI API and is not recommneded for use. See the CDO Public API at https://developer.cisco.com/docs/cisco-defense-orchestrator/ for the API one should use. 
+This is using the CDO UI API and is not recommended for use. See the CDO Public API at https://developer.cisco.com/docs/cisco-defense-orchestrator/ for the API one should use. 
 
 This script is provided as-is without warranty or conditions. See the LICENSE.txt file for more information.
 
