@@ -9,8 +9,8 @@ This script is provided as-is without warranty or conditions. See the LICENSE.tx
 
 ## Script Usage
 To use the script
-1. Edit the env_sample file and add your CDO API key and CDO region endpoint
-2. Rename the env_sample file as .env
+1. Edit the `env_sample` file and add your CDO API key and CDO region endpoint
+2. Rename the env_sample file as `.env`
 3. Install the needed libraries in requirements.txt with
    `pip3 install -r requirements.txt`
 4. Run the script with
