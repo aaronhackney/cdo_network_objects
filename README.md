@@ -10,10 +10,10 @@ This script is provided as-is without warranty or conditions. See the LICENSE.tx
 ## Script Usage
 To use the script
 1. Edit the `env_sample` file and add your CDO API key and CDO region endpoint
-2. Rename the env_sample file as `.env`
+2. Rename the `env_sample` file as `.env`
 3. Install the needed libraries in requirements.txt with
    `pip3 install -r requirements.txt`
 4. Run the script with
    `python3 cdo_objects.py`
 
-The script will retrieve all of the objects/object-groups from CDO and pretty print the json output to the screen as well as save it to the file `objects.json` in the directory where the script is run. 
+The script will retrieve all of the objects/object-groups from CDO and pretty print the json output to the file `objects.json` in the directory where the script was run. 
