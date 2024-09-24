@@ -5,6 +5,7 @@ from json import dumps
 from time import sleep
 from cdo.cdo import CDOObjects
 from dotenv import dotenv_values
+from requests.exceptions import HTTPError, Timeout, TooManyRedirects
 
 logging.basicConfig()
 logger = logging.getLogger("cdo_objects")
@@ -28,9 +29,15 @@ def get_objects(cdo: CDOObjects, obj_count: int, limit: int = 199) -> list[dict]
 
         try:
             objs = cdo.get_objects(offset=offset, limit=limit)
-        except urllib3.exceptions.ProtocolError as e:
-            logger.error("API did not respond within the timeout window")
-            raise urllib3.exceptions.ProtocolError
+        except Timeout as e:
+            logger.error(f"API did not respond within the timeout window {e}")
+            raise SystemExit(e)
+        except HTTPError as e:
+            logger.error(f"HTTP Error {e.response.status_code} returned from API: {e.response.reason}")
+            raise SystemExit(e)
+        except TooManyRedirects as e:
+            logger.error(f"Too many redirects. Do you have the correct URL?")
+            raise SystemExit(e)
 
         for obj in objs:
             objects.append(
@@ -48,7 +55,8 @@ def get_objects(cdo: CDOObjects, obj_count: int, limit: int = 199) -> list[dict]
         burndown -= limit
         logger.warning(f"burndown = {burndown}")
         logger.warning(f"offset this loop = {offset}")
-        if offset > obj_count:
+        if burndown <= 0:
+            # if offset > obj_count:
             break
         offset += limit
         logger.warning(f"offset next loop = {offset}")
