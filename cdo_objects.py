@@ -51,15 +51,10 @@ def get_objects(cdo: CDOObjects, obj_count: int, limit: int = 199) -> list[dict]
                     "overrideContents": obj.get("overrideContents", []),
                 }
             )
-        logger.warning(f"object count = {len(objects)}")
         burndown -= limit
-        logger.warning(f"burndown = {burndown}")
-        logger.warning(f"offset this loop = {offset}")
         if burndown <= 0:
-            # if offset > obj_count:
             break
         offset += limit
-        logger.warning(f"offset next loop = {offset}")
         sleep(1)  # Don't hammer the CDO UI API
     logger.warning(f"{len(objects)} retrieved from CDO")
     return objects
