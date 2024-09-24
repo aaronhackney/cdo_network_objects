@@ -25,7 +25,7 @@ def get_objects(cdo: CDOObjects, obj_count: int, limit: int = 199) -> list[dict]
     offset = 0
     burndown = obj_count
     while True:
-        logger.warning(f"Getting the objects {offset+1} - {offset+limit}")
+        logger.warning(f"Total Objects Retrieved: {len(objects)}. Getting the next {limit} objects")
 
         try:
             objs = cdo.get_objects(offset=offset, limit=limit)
@@ -56,7 +56,7 @@ def get_objects(cdo: CDOObjects, obj_count: int, limit: int = 199) -> list[dict]
             break
         offset += limit
         sleep(1)  # Don't hammer the CDO UI API
-    logger.warning(f"{len(objects)} retrieved from CDO")
+    logger.warning(f"{len(objects)} objects retrieved from CDO")
     return objects
 
 
