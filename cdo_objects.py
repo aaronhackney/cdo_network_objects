@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import urllib3
 import logging
 from json import dumps
 from time import sleep
@@ -22,9 +22,16 @@ def get_objects(cdo: CDOObjects, obj_count: int, limit: int = 199) -> list[dict]
     """Call the CDO UI API and get all network objects and object-groups"""
     objects = []
     offset = 0
-    while offset < obj_count:
-        logger.warning(f"Getting the objects {offset} - {offset+limit}")
-        objs = cdo.get_objects(offset=offset, limit=limit)
+    burndown = obj_count
+    while True:
+        logger.warning(f"Getting the objects {offset+1} - {offset+limit}")
+
+        try:
+            objs = cdo.get_objects(offset=offset, limit=limit)
+        except urllib3.exceptions.ProtocolError as e:
+            logger.error("API did not respond within the timeout window")
+            raise urllib3.exceptions.ProtocolError
+
         for obj in objs:
             objects.append(
                 {
@@ -37,7 +44,14 @@ def get_objects(cdo: CDOObjects, obj_count: int, limit: int = 199) -> list[dict]
                     "overrideContents": obj.get("overrideContents", []),
                 }
             )
+        logger.warning(f"object count = {len(objects)}")
+        burndown -= limit
+        logger.warning(f"burndown = {burndown}")
+        logger.warning(f"offset this loop = {offset}")
+        if offset > obj_count:
+            break
         offset += limit
+        logger.warning(f"offset next loop = {offset}")
         sleep(1)  # Don't hammer the CDO UI API
     logger.warning(f"{len(objects)} retrieved from CDO")
     return objects
