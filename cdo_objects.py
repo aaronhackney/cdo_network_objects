@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import urllib3
 import logging
 from json import dumps
 from time import sleep
