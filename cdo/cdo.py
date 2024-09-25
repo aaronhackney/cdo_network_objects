@@ -22,12 +22,11 @@ class CDO:
         self.cdo_region = CDORegion[cdo_region].value
 
     def _headers(self):
-        """Build the required headers that Graylog expects"""
+        """Build the required headers for CDO"""
         return {
             "Accept": "application/json",
             "Content-Type": "application/json",
-            "User-Agent": f"Python-AnyBanned",
-            "X-Requested-By": "AnyBanned",
+            "User-Agent": f"Python-cdo-objects",
             "Authorization": f"Bearer {self.cdo_token}",
         }
 

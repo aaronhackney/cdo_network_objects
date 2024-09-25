@@ -64,7 +64,6 @@ def main(cdo_token: str, cdo_region: str, output_file="objects.json") -> None:
     obj_count = cdo.get_objects(count=True)
     logger.warning(f"Retrieving {obj_count} objects...")
     objects = get_objects(cdo, obj_count["aggregationQueryResult"])
-    # logger.warning(dumps(objects, indent=4))
     write_output_file(objects, output_file)
 
 
