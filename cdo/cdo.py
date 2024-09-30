@@ -45,12 +45,7 @@ class CDOObjects(CDO):
     def __init__(self, cdo_token, cdo_region) -> None:
         super().__init__(cdo_token, cdo_region)
 
-    def get_objects(self, count=False, limit: int = 100, offset: int = 0) -> list:
-        """Get All CDO Objects"""
-        q = (
-            "q=((cdoInternal%3Afalse)%20AND%20(isReadOnly%3Afalse%20OR%20metadata.CDO_FMC_READONLY%3Atrue"
-            "%20OR%20objectType%3ASGT_GROUP))%20AND%20(NOT%20issueType%3AINCONSISTENT%20AND%20NOT%20issues%3ASHARED)"
-            "%20AND%20(NOT%20deviceType%3AFMC_MANAGED_DEVICE)%20AND%20((objectType%3A*NETWORK*))"
-        )
+    def get_objects(self, q, count=False, limit: int = 100, offset: int = 0) -> list:
+        """Return CDO objects and object-groups or return the number of objects/object-groups that match the query"""
         q = q + f"&sort=name%3Aasc&limit={limit}&offset={offset}" if not count else "agg=count&" + q
         return self.get(path="/aegis/rest/v1/services/targets/objects", query=q)

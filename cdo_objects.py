@@ -18,8 +18,8 @@ def write_output_file(objects: list, output_file: str) -> None:
     logger.warning(f"File written: {output_file}")
 
 
-def get_objects(cdo: CDOObjects, obj_count: int, limit: int = 199) -> list[dict]:
-    """Call the CDO UI API and get all network objects and object-groups"""
+def get_objects(cdo: CDOObjects, query, obj_count: int, limit: int = 199) -> list[dict]:
+    """Call the CDO UI API as many times as need to get all network objects and object-groups matching the query"""
     objects = []
     offset = 0
     burndown = obj_count
@@ -27,7 +27,7 @@ def get_objects(cdo: CDOObjects, obj_count: int, limit: int = 199) -> list[dict]
         logger.warning(f"Total Objects Retrieved: {len(objects)}. Getting the next {limit} objects")
 
         try:
-            objs = cdo.get_objects(offset=offset, limit=limit)
+            objs = cdo.get_objects(query, offset=offset, limit=limit)
         except Timeout as e:
             logger.error(f"API did not respond within the timeout window {e}")
             raise SystemExit(e)
@@ -59,14 +59,36 @@ def get_objects(cdo: CDOObjects, obj_count: int, limit: int = 199) -> list[dict]
     return objects
 
 
-def main(cdo_token: str, cdo_region: str, output_file="objects.json") -> None:
+def main(cdo_token: str, cdo_region: str, query: str, output_file="objects.json") -> None:
     cdo = CDOObjects(cdo_token, cdo_region)
-    obj_count = cdo.get_objects(count=True)
+
+    # Get the number of objects that we need to retreive for API paging
+    obj_count = cdo.get_objects(query, count=True)
+
+    # Call the API as many times as needed to get all of the objects
     logger.warning(f"Retrieving {obj_count} objects...")
-    objects = get_objects(cdo, obj_count["aggregationQueryResult"])
+    objects = get_objects(cdo, query, obj_count["aggregationQueryResult"])
+
+    # Do whatever you want with the results....slice and dice to your liking
     write_output_file(objects, output_file)
 
 
 if __name__ == "__main__":
     config = dotenv_values(".env")
-    main(config.get("CDO_TOKEN"), config.get("CDO_REGION").upper())
+
+    # Next steps if desired: Take this as an input value if you wish to search for specific objects and object-groups
+    # search = "bad_actors"
+    search = ""
+
+    # This is the aegis way of getting all objects and network objects
+    query = (
+        "q=((cdoInternal%3Afalse)+AND+(isReadOnly%3Afalse+OR+metadata.CDO_FMC_READONLY%3Atrue"
+        "+OR+objectType%3ASGT_GROUP))+AND+(NOT+issueType%3AINCONSISTENT+AND+NOT+issues%3ASHARED)"
+        "+AND+(NOT+deviceType%3AFMC_MANAGED_DEVICE)+AND+((objectType%3A*NETWORK*))"
+    )
+
+    if search:
+        # If we do not want all objects, search just for the objects with the given names
+        query = f"{query[:2]}(name%3A*{search}*)+AND+{query[2:]}"
+
+    main(config.get("CDO_TOKEN"), config.get("CDO_REGION").upper(), query)
