@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
     # Next steps if desired: Take this as an input value if you wish to search for specific objects and object-groups
     # search = "bad_actors"
-    search = ""
+    search = config.get("SEARCH")
 
     # This is the aegis way of getting all objects and network objects
     query = (

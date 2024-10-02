@@ -1,3 +1,4 @@
 # Edit this file with your API key and region then rename it to .env
 CDO_TOKEN="abc123.....789xyz"
 CDO_REGION="CDO_US" # [CDO_US,CDO_EU,CDO_APJ]
+SEARCH="my_object_group"
